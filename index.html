@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المحاضرة السادسة - Arrays & For Loop</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* ألوان هادئة ومريحة للعين */
+            --bg-main: #f5f7fa;
+            --bg-soft: #fafbfc;
+            --bg-card: #ffffff;
+            --primary: #4a90a4;
+            --primary-light: #7ab8c9;
+            --primary-soft: #e8f4f7;
+            --secondary: #7fb685;
+            --secondary-soft: #e8f5ea;
+            --accent: #f4a261;
+            --accent-soft: #fde8d0;
+            --warning: #e76f51;
+            --warning-soft: #fde4dc;
+            --purple: #9b8ec4;
+            --purple-soft: #ede8f5;
+            --text-dark: #2d3748;
+            --text-medium: #4a5568;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --shadow-soft: rgba(74, 144, 164, 0.08);
+            --shadow-medium: rgba(74, 144, 164, 0.15);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #e8f4f7 0%, #ede8f5 100%);
+            overflow: hidden;
+            height: 100vh;
+            color: var(--text-dark);
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            opacity: 0;
+            transform: translateX(100px) scale(0.95);
+            transition: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            pointer-events: all;
+        }
+
+        .slide-content {
+            background: var(--bg-card);
+            border-radius: 28px;
+            padding: 45px;
+            box-shadow: 0 15px 50px var(--shadow-medium);
+            max-width: 1100px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.7s ease;
+            border: 1px solid var(--border);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 3em;
+            font-weight: 900;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            color: var(--primary);
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-light), var(--secondary));
+            border-radius: 10px;
+        }
+
+        h3 {
+            font-size: 1.5em;
+            color: var(--text-dark);
+            margin: 15px 0 12px 0;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.25em;
+            line-height: 1.9;
+            color: var(--text-medium);
+            margin: 10px 0;
+        }
+
+        .emoji {
+            font-size: 2.8em;
+            margin: 8px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        /* الصناديق */
+        .box {
+            background: var(--bg-soft);
+            padding: 25px;
+            border-radius: 18px;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px var(--shadow-soft);
+            transition: all 0.3s ease;
+            border-right: 5px solid var(--primary);
+        }
+
+        .box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px var(--shadow-medium);
+        }
+
+        .box.primary {
+            background: var(--primary-soft);
+            border-right-color: var(--primary);
+        }
+
+        .box.secondary {
+            background: var(--secondary-soft);
+            border-right-color: var(--secondary);
+        }
+
+        .box.accent {
+            background: var(--accent-soft);
+            border-right-color: var(--accent);
+        }
+
+        .box.warning {
+            background: var(--warning-soft);
+            border-right-color: var(--warning);
+        }
+
+        .box.purple {
+            background: var(--purple-soft);
+            border-right-color: var(--purple);
+        }
+
+        .box h3 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        /* كود برمجي منظم وواضح */
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 28px;
+            border-radius: 16px;
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: 0.95em;
+            line-height: 2;
+            margin: 18px 0;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 8px 25px rgba(30, 41, 59, 0.3);
+            overflow-x: auto;
+            border: 1px solid #334155;
+            position: relative;
+            white-space: pre;
+        }
+
+        .code-block::before {
+            content: 'Arduino';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .code-keyword { color: #c084fc; font-weight: bold; }
+        .code-function { color: #7dd3fc; }
+        .code-number { color: #fbbf24; }
+        .code-comment { color: #94a3b8; font-style: italic; }
+        .code-variable { color: #86efac; }
+        .code-string { color: #fca5a5; }
+
+        .question-box {
+            background: linear-gradient(135deg, #9b8ec4 0%, #7ab8c9 100%);
+            color: white;
+            padding: 28px;
+            border-radius: 18px;
+            margin: 18px 0;
+            box-shadow: 0 8px 25px rgba(155, 142, 196, 0.25);
+            animation: pulse 2.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.015); }
+        }
+
+        .question-box h3 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.7em;
+        }
+
+        .answer-box {
+            background: linear-gradient(135deg, var(--secondary) 0%, #5fa36a 100%);
+            color: white;
+            padding: 22px;
+            border-radius: 14px;
+            margin: 12px 0;
+            box-shadow: 0 6px 18px rgba(127, 182, 133, 0.25);
+            font-size: 1.2em;
+        }
+
+        .nav-buttons {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 18px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 25px var(--shadow-medium);
+            transition: all 0.3s ease;
+            color: var(--primary);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px var(--shadow-medium);
+            background: var(--primary);
+            color: white;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-light), var(--secondary));
+            transition: width 0.3s ease;
+            z-index: 1001;
+        }
+
+        .slide-number {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 25px;
+            font-weight: 800;
+            font-size: 1em;
+            color: var(--primary);
+            z-index: 1000;
+            box-shadow: 0 4px 15px var(--shadow-soft);
+            border: 1px solid var(--border);
+        }
+
+        .highlight {
+            background: var(--accent-soft);
+            color: var(--text-dark);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            display: inline-block;
+            margin: 3px;
+            border: 1px solid var(--accent);
+        }
+
+        .title-slide .slide-content {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--primary-soft) 100%);
+            text-align: center;
+            border: 2px solid var(--primary-light);
+        }
+
+        .title-slide h1 {
+            font-size: 3.8em;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-slide .subtitle {
+            color: var(--text-medium);
+            font-size: 2em;
+            margin-top: 15px;
+            font-weight: 700;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li {
+            padding: 10px 0;
+            padding-right: 35px;
+            position: relative;
+            font-size: 1.2em;
+            color: var(--text-medium);
+            border-bottom: 1px solid var(--border);
+        }
+
+        ul li:before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+
+        .review-card {
+            background: var(--bg-soft);
+            padding: 18px;
+            border-radius: 14px;
+            margin: 10px 0;
+            box-shadow: 0 3px 12px var(--shadow-soft);
+            border-right: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateX(-4px);
+            box-shadow: 0 6px 20px var(--shadow-medium);
+        }
+
+        .homework-item {
+            background: linear-gradient(135deg, var(--accent-soft) 0%, #fef3e2 100%);
+            padding: 18px;
+            border-radius: 14px;
+            margin: 10px 0;
+            box-shadow: 0 3px 12px rgba(244, 162, 97, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-right: 4px solid var(--accent);
+        }
+
+        .homework-number {
+            background: var(--accent);
+            color: white;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .array-visual {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .array-cell {
+            background: var(--primary-soft);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 15px 20px;
+            text-align: center;
+            min-width: 70px;
+            box-shadow: 0 4px 12px var(--shadow-soft);
+            transition: all 0.3s ease;
+        }
+
+        .array-cell:hover {
+            transform: translateY(-5px);
+            background: var(--primary);
+            color: white;
+        }
+
+        .array-cell .index {
+            font-size: 0.85em;
+            color: var(--text-light);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .array-cell:hover .index {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .array-cell .value {
+            font-size: 1.5em;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .array-cell:hover .value {
+            color: white;
+        }
+
+        .comparison-box {
+            background: var(--bg-soft);
+            border-radius: 18px;
+            padding: 25px;
+            margin: 18px 0;
+            border: 2px dashed var(--border);
+        }
+
+        .comparison-box h3 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .step-box {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            margin: 12px 0;
+            box-shadow: 0 3px 12px var(--shadow-soft);
+            border-right: 5px solid var(--secondary);
+            position: relative;
+            padding-right: 55px;
+        }
+
+        .step-number {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--secondary);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2em;
+        }
+
+        .warning-box {
+            background: var(--warning-soft);
+            color: var(--text-dark);
+            padding: 20px;
+            border-radius: 14px;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(231, 111, 81, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-right: 4px solid var(--warning);
+        }
+
+        .warning-box .icon {
+            font-size: 2.5em;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.6em; }
+            p { font-size: 1.1em; }
+            .slide-content { padding: 25px; }
+            .code-block { font-size: 0.85em; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="slide-number" id="slideNumber">1 / 16</div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <div class="slide-content">
+                <h1>🎯 المحاضرة السادسة</h1>
+                <div class="subtitle">Arrays & For Loop<br>تنظيم الكود باحتراف</div>
+                <div style="margin-top: 30px;">
+                    <span class="emoji">📦</span>
+                    <span class="emoji">🔄</span>
+                    <span class="emoji">✨</span>
+                </div>
+                <p style="color: var(--text-medium); font-size: 1.4em; margin-top: 25px; font-weight: 700;">
+                    كود أقصر • أنظف • أذكى! 🚀
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Review -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>🔄 مراجعة المحاضرة الخامسة</h2>
+                <div class="grid-2">
+                    <div class="review-card">
+                        <strong>س1:</strong> إيه هو 7 Segment؟
+                        <div class="answer-box" style="margin-top: 10px; font-size: 1.05em;">
+                            شاشة فيها 7 لمبات بتعرض أرقام
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <strong>س2:</strong> عشان نعرض رقم 1، بنشغل إيه؟
+                        <div class="answer-box" style="margin-top: 10px; font-size: 1.05em;">
+                            B و C بس
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <strong>س3:</strong> إزاي بنعرف الـ pins في الكود؟
+                        <div class="answer-box" style="margin-top: 10px; font-size: 1.05em;">
+                            <code style="background: rgba(255,255,255,0.3); padding: 3px 8px; border-radius: 5px;">int a = 2;</code>
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <strong>س4:</strong> عشان نعرض رقم 8، بنشغل إيه؟
+                        <div class="answer-box" style="margin-top: 10px; font-size: 1.05em;">
+                            كل الـ 7 segments
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: The Problem -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>😫 المشكلة: كود طويل جداً!</h2>
+                <div class="box warning">
+                    <h3>🤔 شوفوا الكود اللي كتبناه لعرض رقم 1:</h3>
+                </div>
+                <div class="code-block"><span class="code-keyword">int</span> <span class="code-variable">a</span> = <span class="code-number">2</span>;
+<span class="code-keyword">int</span> <span class="code-variable">b</span> = <span class="code-number">3</span>;
+<span class="code-keyword">int</span> <span class="code-variable">c</span> = <span class="code-number">4</span>;
+<span class="code-keyword">int</span> <span class="code-variable">d</span> = <span class="code-number">5</span>;
+<span class="code-keyword">int</span> <span class="code-variable">e</span> = <span class="code-number">6</span>;
+<span class="code-keyword">int</span> <span class="code-variable">f</span> = <span class="code-number">7</span>;
+<span class="code-keyword">int</span> <span class="code-variable">g</span> = <span class="code-number">8</span>;
+
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+  <span class="code-function">pinMode</span>(a, OUTPUT);
+  <span class="code-function">pinMode</span>(b, OUTPUT);
+  <span class="code-function">pinMode</span>(c, OUTPUT);
+  <span class="code-function">pinMode</span>(d, OUTPUT);
+  <span class="code-function">pinMode</span>(e, OUTPUT);
+  <span class="code-function">pinMode</span>(f, OUTPUT);
+  <span class="code-function">pinMode</span>(g, OUTPUT);
+}</div>
+                <div class="question-box">
+                    <h3>🤯 لو عايزين نعرض 10 أرقام، هيبقى عندنا 70 سطر!</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: The Solution -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>✨ الحل: طريقتان سحريتان!</h2>
+                <div class="grid-2">
+                    <div class="box primary">
+                        <div class="emoji">📦</div>
+                        <h3>الحل الأول</h3>
+                        <p style="font-size: 1.3em; text-align: center;">
+                            <strong>Array</strong><br>
+                            نجمع كل الـ pins في مكان واحد
+                        </p>
+                    </div>
+                    <div class="box secondary">
+                        <div class="emoji">🔄</div>
+                        <h3>الحل الثاني</h3>
+                        <p style="font-size: 1.3em; text-align: center;">
+                            <strong>For Loop</strong><br>
+                            نكرر الأوامر بذكاء
+                        </p>
+                    </div>
+                </div>
+                <div class="box accent">
+                    <h3>🎯 النتيجة:</h3>
+                    <p style="text-align: center; font-size: 1.4em;">
+                        كود <span class="highlight">أقصر</span> + <span class="highlight">أنظف</span> + <span class="highlight">أسهل</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Array Concept -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>📦 ما هو Array؟</h2>
+                <div class="box primary">
+                    <h3>💡 التشبيه:</h3>
+                    <p style="font-size: 1.3em; text-align: center;">
+                        Array زي <span class="highlight">صندوق فيه أدراج</span> 🗄️<br>
+                        كل درج ليه <strong>رقم</strong> و<strong>قيمة</strong>
+                    </p>
+                </div>
+                <h3 style="text-align: center; margin-top: 25px;">📊 شكل الـ Array:</h3>
+                <div class="array-visual">
+                    <div class="array-cell">
+                        <div class="index">[0]</div>
+                        <div class="value">2</div>
+                    </div>
+                    <div class="array-cell">
+                        <div class="index">[1]</div>
+                        <div class="value">3</div>
+                    </div>
+                    <div class="array-cell">
+                        <div class="index">[2]</div>
+                        <div class="value">4</div>
+                    </div>
+                    <div class="array-cell">
+                        <div class="index">[3]</div>
+                        <div class="value">5</div>
+                    </div>
+                    <div class="array-cell">
+                        <div class="index">[4]</div>
+                        <div class="value">6</div>
+                    </div>
+                    <div class="array-cell">
+                        <div class="index">[5]</div>
+                        <div class="value">7</div>
+                    </div>
+                    <div class="array-cell">
+                        <div class="index">[6]</div>
+                        <div class="value">8</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Array Code -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>💻 كتابة Array في الكود</h2>
+                <div class="comparison-box">
+                    <h3>❌ الطريقة القديمة (7 أسطر)</h3>
+                    <div class="code-block"><span class="code-keyword">int</span> <span class="code-variable">a</span> = <span class="code-number">2</span>;
+<span class="code-keyword">int</span> <span class="code-variable">b</span> = <span class="code-number">3</span>;
+<span class="code-keyword">int</span> <span class="code-variable">c</span> = <span class="code-number">4</span>;
+<span class="code-keyword">int</span> <span class="code-variable">d</span> = <span class="code-number">5</span>;
+<span class="code-keyword">int</span> <span class="code-variable">e</span> = <span class="code-number">6</span>;
+<span class="code-keyword">int</span> <span class="code-variable">f</span> = <span class="code-number">7</span>;
+<span class="code-keyword">int</span> <span class="code-variable">g</span> = <span class="code-number">8</span>;</div>
+                </div>
+                <div class="comparison-box" style="border-color: var(--secondary);">
+                    <h3 style="color: var(--secondary);">✅ الطريقة الجديدة (سطر واحد!)</h3>
+                    <div class="code-block"><span class="code-keyword">int</span> <span class="code-variable">pins</span>[] = {<span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>, <span class="code-number">6</span>, <span class="code-number">7</span>, <span class="code-number">8</span>};</div>
+                </div>
+                <div class="answer-box" style="text-align: center;">
+                    ✨ من 7 أسطر إلى سطر واحد فقط!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Array Important Note -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>⚠️ قاعدة ذهبية في Array</h2>
+                <div class="warning-box">
+                    <div class="icon">🎯</div>
+                    <div>
+                        <h3>الأرقام تبدأ من 0 مش من 1!</h3>
+                    </div>
+                </div>
+                <div class="box primary">
+                    <h3>📊 ترتيب الـ segments:</h3>
+                    <ul>
+                        <li><code>pins[0]</code> → segment A (Pin 2)</li>
+                        <li><code>pins[1]</code> → segment B (Pin 3)</li>
+                        <li><code>pins[2]</code> → segment C (Pin 4)</li>
+                        <li><code>pins[3]</code> → segment D (Pin 5)</li>
+                        <li><code>pins[4]</code> → segment E (Pin 6)</li>
+                        <li><code>pins[5]</code> → segment F (Pin 7)</li>
+                        <li><code>pins[6]</code> → segment G (Pin 8)</li>
+                    </ul>
+                </div>
+                <div class="question-box">
+                    <h3>💡 عايز تشغل segment C؟ اكتب: <code>pins[2]</code></h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Using Array -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>🎯 استخدام Array في الكود</h2>
+                <div class="code-block"><span class="code-comment">// تجميع كل الـ pins في Array</span>
+<span class="code-keyword">int</span> <span class="code-variable">pins</span>[] = {<span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>, <span class="code-number">6</span>, <span class="code-number">7</span>, <span class="code-number">8</span>};
+
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+  <span class="code-comment">// تحديد كل الـ pins كـ OUTPUT</span>
+  <span class="code-keyword">for</span>(<span class="code-keyword">int</span> <span class="code-variable">i</span> = <span class="code-number">0</span>; <span class="code-variable">i</span> < <span class="code-number">7</span>; <span class="code-variable">i</span>++) {
+    <span class="code-function">pinMode</span>(<span class="code-variable">pins</span>[<span class="code-variable">i</span>], OUTPUT);
+  }
+}
+
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+  <span class="code-comment">// تشغيل segment A</span>
+  <span class="code-function">digitalWrite</span>(<span class="code-variable">pins</span>[<span class="code-number">0</span>], HIGH);
+}</div>
+                <div class="grid-2">
+                    <div class="box secondary">
+                        <h3>💡 لتشغيل B:</h3>
+                        <p><code>digitalWrite(pins[1], HIGH);</code></p>
+                    </div>
+                    <div class="box secondary">
+                        <h3>💡 لتشغيل G:</h3>
+                        <p><code>digitalWrite(pins[6], HIGH);</code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: For Loop Concept -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>🔄 ما هو For Loop؟</h2>
+                <div class="box purple">
+                    <h3>💡 التشبيه:</h3>
+                    <p style="font-size: 1.3em; text-align: center;">
+                        المدرس قال للطلاب: <span class="highlight">اقفزوا 5 مرات!</span> 🤸<br>
+                        بدل ما يقول "اقفز" 5 مرات منفصلة
+                    </p>
+                </div>
+                <div class="box primary">
+                    <h3>🎯 For Loop معناها:</h3>
+                    <p style="text-align: center; font-size: 1.4em;">
+                        <strong>كرر الأمر ده عدد كذا مرة</strong> 🔄
+                    </p>
+                </div>
+                <div class="question-box">
+                    <h3>🤔 ليه نستخدمه؟</h3>
+                    <p style="text-align: center; font-size: 1.2em;">
+                        عشان نختصر الكود ونكرره بذكاء! ✨
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: For Loop Syntax -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>📝 شكل For Loop</h2>
+                <div class="code-block"><span class="code-keyword">for</span>(<span class="code-keyword">int</span> <span class="code-variable">i</span> = <span class="code-number">0</span>; <span class="code-variable">i</span> < <span class="code-number">5</span>; <span class="code-variable">i</span>++) {
+  <span class="code-comment">// الأمر اللي عايزين نكرره</span>
+}</div>
+                <div class="grid-3">
+                    <div class="step-box">
+                        <div class="step-number">1</div>
+                        <h3>البداية</h3>
+                        <p><code>int i = 0</code><br>ابدأ من صفر</p>
+                    </div>
+                    <div class="step-box">
+                        <div class="step-number">2</div>
+                        <h3>الشرط</h3>
+                        <p><code>i < 5</code><br>كمّل لحد 5</p>
+                    </div>
+                    <div class="step-box">
+                        <div class="step-number">3</div>
+                        <h3>الزيادة</h3>
+                        <p><code>i++</code><br>زد 1 كل مرة</p>
+                    </div>
+                </div>
+                <div class="answer-box" style="text-align: center;">
+                    💡 الكود جوا الـ For Loop هيتكرر 5 مرات
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: For Loop Example -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>💻 مثال عملي على For Loop</h2>
+                <div class="box primary">
+                    <h3>🎯 المطلوب:</h3>
+                    <p style="text-align: center; font-size: 1.3em;">
+                        تشغيل كل الـ 7 segments واحد واحد
+                    </p>
+                </div>
+                <div class="code-block"><span class="code-keyword">int</span> <span class="code-variable">pins</span>[] = {<span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>, <span class="code-number">6</span>, <span class="code-number">7</span>, <span class="code-number">8</span>};
+
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+  <span class="code-keyword">for</span>(<span class="code-keyword">int</span> <span class="code-variable">i</span> = <span class="code-number">0</span>; <span class="code-variable">i</span> < <span class="code-number">7</span>; <span class="code-variable">i</span>++) {
+    <span class="code-function">pinMode</span>(<span class="code-variable">pins</span>[<span class="code-variable">i</span>], OUTPUT);
+  }
+}
+
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+  <span class="code-comment">// شغّل كل segment واحد واحد</span>
+  <span class="code-keyword">for</span>(<span class="code-keyword">int</span> <span class="code-variable">i</span> = <span class="code-number">0</span>; <span class="code-variable">i</span> < <span class="code-number">7</span>; <span class="code-variable">i</span>++) {
+    <span class="code-function">digitalWrite</span>(<span class="code-variable">pins</span>[<span class="code-variable">i</span>], HIGH);
+    <span class="code-function">delay</span>(<span class="code-number">500</span>);
+  }
+}</div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Smart Counter Project -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>🎯 المشروع: عداد ذكي من 0 لـ 9</h2>
+                <div class="box accent">
+                    <h3>💡 الفكرة:</h3>
+                    <p style="text-align: center; font-size: 1.3em;">
+                        نعمل Array فيه كل الأرقام من 0 لـ 9<br>
+                        ونعرضهم بالتتابع باستخدام For Loop!
+                    </p>
+                </div>
+                <div class="box secondary">
+                    <h3>📊 Array الأرقام:</h3>
+                    <p style="text-align: center; font-size: 1.2em;">
+                        كل رقم = 7 قيم (شغال/مطفي)<br>
+                        <code>1</code> = شغال ✅ | <code>0</code> = مطفي ❌
+                    </p>
+                </div>
+                <div class="grid-3">
+                    <div class="box">
+                        <h3>الرقم 0</h3>
+                        <p style="font-family: monospace; font-size: 1.1em;">
+                            1,1,1,1,1,1,0
+                        </p>
+                    </div>
+                    <div class="box">
+                        <h3>الرقم 1</h3>
+                        <p style="font-family: monospace; font-size: 1.1em;">
+                            0,1,1,0,0,0,0
+                        </p>
+                    </div>
+                    <div class="box">
+                        <h3>الرقم 8</h3>
+                        <p style="font-family: monospace; font-size: 1.1em;">
+                            1,1,1,1,1,1,1
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Project Code Part 1 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>💻 كود المشروع - الجزء الأول</h2>
+                <div class="code-block"><span class="code-comment">// تجميع الـ pins في Array</span>
+<span class="code-keyword">int</span> <span class="code-variable">pins</span>[] = {<span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>, <span class="code-number">6</span>, <span class="code-number">7</span>, <span class="code-number">8</span>};
+
+<span class="code-comment">// Array ثنائي الأبعاد فيه كل الأرقام</span>
+<span class="code-keyword">int</span> <span class="code-variable">numbers</span>[<span class="code-number">10</span>][<span class="code-number">7</span>] = {
+  {<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">0</span>},  <span class="code-comment">// الرقم 0</span>
+  {<span class="code-number">0</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">0</span>,<span class="code-number">0</span>,<span class="code-number">0</span>,<span class="code-number">0</span>},  <span class="code-comment">// الرقم 1</span>
+  {<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">0</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">0</span>,<span class="code-number">1</span>},  <span class="code-comment">// الرقم 2</span>
+  {<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">0</span>,<span class="code-number">0</span>,<span class="code-number">1</span>},  <span class="code-comment">// الرقم 3</span>
+  {<span class="code-number">0</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">0</span>,<span class="code-number">0</span>,<span class="code-number">1</span>,<span class="code-number">1</span>},  <span class="code-comment">// الرقم 4</span>
+  {<span class="code-number">1</span>,<span class="code-number">0</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">0</span>,<span class="code-number">1</span>,<span class="code-number">1</span>},  <span class="code-comment">// الرقم 5</span>
+  {<span class="code-number">1</span>,<span class="code-number">0</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>},  <span class="code-comment">// الرقم 6</span>
+  {<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">0</span>,<span class="code-number">0</span>,<span class="code-number">0</span>,<span class="code-number">0</span>},  <span class="code-comment">// الرقم 7</span>
+  {<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>},  <span class="code-comment">// الرقم 8</span>
+  {<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">1</span>,<span class="code-number">0</span>,<span class="code-number">1</span>,<span class="code-number">1</span>}   <span class="code-comment">// الرقم 9</span>
+};</div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Project Code Part 2 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>💻 كود المشروع - الجزء الثاني</h2>
+                <div class="code-block"><span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+  <span class="code-comment">// تحديد كل الـ pins كـ OUTPUT</span>
+  <span class="code-keyword">for</span>(<span class="code-keyword">int</span> <span class="code-variable">i</span> = <span class="code-number">0</span>; <span class="code-variable">i</span> < <span class="code-number">7</span>; <span class="code-variable">i</span>++) {
+    <span class="code-function">pinMode</span>(<span class="code-variable">pins</span>[<span class="code-variable">i</span>], OUTPUT);
+  }
+}
+
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+  <span class="code-comment">// عرض الأرقام من 0 لـ 9</span>
+  <span class="code-keyword">for</span>(<span class="code-keyword">int</span> <span class="code-variable">num</span> = <span class="code-number">0</span>; <span class="code-variable">num</span> < <span class="code-number">10</span>; <span class="code-variable">num</span>++) {
+    
+    <span class="code-comment">// عرض الرقم الحالي</span>
+    <span class="code-keyword">for</span>(<span class="code-keyword">int</span> <span class="code-variable">i</span> = <span class="code-number">0</span>; <span class="code-variable">i</span> < <span class="code-number">7</span>; <span class="code-variable">i</span>++) {
+      <span class="code-function">digitalWrite</span>(<span class="code-variable">pins</span>[<span class="code-variable">i</span>], <span class="code-variable">numbers</span>[<span class="code-variable">num</span>][<span class="code-variable">i</span>]);
+    }
+    
+    <span class="code-function">delay</span>(<span class="code-number">1000</span>);  <span class="code-comment">// استنى ثانية</span>
+  }
+}</div>
+                <div class="answer-box" style="text-align: center;">
+                    🎉 عداد ذكي من 0 لـ 9 بكود نظيف ومنظم!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Review -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>📝 المراجعة السريعة</h2>
+                <div class="grid-2">
+                    <div class="review-card">
+                        <strong>س1:</strong> إيه هو Array؟
+                        <div class="answer-box" style="margin-top: 10px; font-size: 1.05em;">
+                            صندوق فيه أماكن كتير
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <strong>س2:</strong> أول مكان في Array رقمه كام؟
+                        <div class="answer-box" style="margin-top: 10px; font-size: 1.05em;">
+                            0 (صفر)
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <strong>س3:</strong> إيه هو For Loop؟
+                        <div class="answer-box" style="margin-top: 10px; font-size: 1.05em;">
+                            نكرر أمر كام مرة
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <strong>س4:</strong> فايدة Array + For Loop؟
+                        <div class="answer-box" style="margin-top: 10px; font-size: 1.05em;">
+                            كود أقصر وأنظف
+                        </div>
+                    </div>
+                </div>
+                <div class="box accent">
+                    <h3>✨ إنجزنا النهاردة:</h3>
+                    <ul>
+                        <li>تعلمنا Array لتجميع البيانات</li>
+                        <li>تعلمنا For Loop للتكرار الذكي</li>
+                        <li>عملنا عداد منظم باحتراف</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Homework -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>📚 الواجب البيتي</h2>
+                <div class="homework-item">
+                    <span class="homework-number">1</span>
+                    <div>
+                        <strong>ارسم في الكراسة</strong><br>
+                        ارسم Array فيه 7 أماكن واكتب رقم كل pin
+                    </div>
+                </div>
+                <div class="homework-item">
+                    <span class="homework-number">2</span>
+                    <div>
+                        <strong>جرب الكود</strong><br>
+                        شغّل العداد من 0 لـ 9 وغير السرعة
+                    </div>
+                </div>
+                <div class="homework-item">
+                    <span class="homework-number">3</span>
+                    <div>
+                        <strong>تحدي ⭐</strong><br>
+                        اعمل عداد تنازلي من 9 لـ 0
+                    </div>
+                </div>
+                <div class="homework-item">
+                    <span class="homework-number">4</span>
+                    <div>
+                        <strong>فكر 💭</strong><br>
+                        فين بنستخدم For Loop في حياتنا؟ اكتب 3 أمثلة
+                    </div>
+                </div>
+                <div class="box secondary" style="margin-top: 20px; text-align: center;">
+                    <h3>🎉 استعدوا للمحاضرة الجاية!</h3>
+                    <p style="font-size: 1.3em;">مشاريع أكبر وتحديات أقوى! 🚀</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <button class="nav-btn" onclick="previousSlide()">◀ السابق</button>
+        <button class="nav-btn" onclick="nextSlide()">التالي ▶</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                }
+            });
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('slideNumber').textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 50) {
+                nextSlide();
+            }
+            if (touchEndX - touchStartX > 50) {
+                previousSlide();
+            }
+        });
+
+        updateSlide();
+    </script>
+</body>
+</html>
